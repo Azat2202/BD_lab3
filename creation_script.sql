@@ -29,21 +29,21 @@ CREATE TABLE IF NOT EXISTS road(
 );
 
 CREATE TABLE IF NOT EXISTS car(
-	id SERIAL NOT NULL PRIMARY KEY, 
+	id SERIAL NOT NULL PRIMARY KEY,
 	road_id int NOT NULL REFERENCES road(id),
 	speed SPEED NOT null
 );;
 
 CREATE TABLE IF NOT EXISTS human(
 	id SERIAL PRIMARY KEY,
-	car_id INT REFERENCES car(id), 
+	car_id INT REFERENCES car(id),
 	human_name text not NULL
 );
 
 CREATE TABLE IF NOT EXISTS imagination(
 	id SERIAL PRIMARY KEY,
 	human_id INT NOT NULL REFERENCES human(id),
-	city_id INT REFERENCES city(id), 
+	city_id INT REFERENCES city(id),
 	imagination_text TEXT,
 	mood MOOD
 );
@@ -64,29 +64,46 @@ CREATE TABLE IF NOT EXISTS question(
 --убедил себя, что, будь иначе, машина не несла 
 --бы его с такой стремительностью сквозь пласты земли.
 
-INSERT INTO city(city_name, city_size) 
-	VALUES 
+INSERT INTO city(city_name, city_size)
+	VALUES
 		('Лиз', 'полноразмерный город'),
 		('Диаспар', 'уменьшенная копия');
 
 
-INSERT INTO road(endpoint_id, road_location) 
-	VALUES 
+INSERT INTO road(endpoint_id, road_location)
+	VALUES
 		(1, 'сквозь пласты земли');
 
-	
+
 INSERT INTO car (road_id, speed)
 	VALUES (1, 'стремительно');
 
-INSERT INTO human (car_id, human_name) 
+INSERT INTO human (car_id, human_name)
 	VALUES (1, 'Олвин');
 
 INSERT INTO imagination(human_id, city_id, imagination_text, "mood")
-VALUES 
+VALUES
 	(1, 1, 'прибыть ранее тела', 'стремглав'),
 	(1, 1, NULL ,'как ни старался');
 
 INSERT INTO question (imagination_id, question_text)
-	VALUES 
+	VALUES
 		(1, 'Что же это будет за город?'),
 		(2, 'Да и существует ли он еще?');
+
+-- Дополнительное задание
+-- Вывести скорость машины на которой Олвин едет в Лиз
+
+SELECT speed FROM car
+WHERE road_id = (
+    SELECT id FROM road
+    WHERE endpoint_id = (
+        SELECT id FROM city
+        WHERE (city_name = 'Лиз')
+    )
+      AND
+            id = (
+            SELECT car_id FROM human
+            WHERE (human_name = 'Олвин')
+        )
+);
