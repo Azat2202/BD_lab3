@@ -70,6 +70,14 @@ BEGIN
         UPDATE road
         SET traffic_load = traffic_load - 1
         WHERE id = OLD.road_id;
+	ELSIF (TG_OP = 'UPDATE') THEN
+        UPDATE road
+        SET traffic_load = traffic_load - 1
+        WHERE id = OLD.road_id;
+		UPDATE road
+        SET traffic_load = traffic_load + 1
+        WHERE id = NEW.road_id;
+
     END IF;
     RETURN NULL;
 END
@@ -77,7 +85,7 @@ $$
 LANGUAGE plpgsql;
 
 CREATE OR REPLACE TRIGGER update_road_traffic_trigger
-AFTER INSERT OR DELETE ON car 
+AFTER INSERT OR DELETE OR UPDATE ON car 
 FOR EACH ROW 
 EXECUTE FUNCTION update_road_traffic();
 
